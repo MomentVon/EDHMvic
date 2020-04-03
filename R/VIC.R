@@ -7,7 +7,7 @@
 #' @param ClsName chr, chr vector, all the methonds of hydrology modul. e.g.ClsNa <- c("VIC", "PenmanMonteith", "GreenAmpt", "Gash", "ARNO", "G2RES")
 #' @param MetData list, num, list of metrol data. For VIC Model should contain at least the following 8 data:
 #'     \itemize{
-#'     \item The field names in these lists must be consistent and will be the only index.
+#'     (The field names must be the same as listed in the following list because they will be the only index.)
 #'     \item Tmean
 #'     \item Tmax
 #'     \item Tmin
@@ -20,7 +20,7 @@
 #'     Each data is a 2-array(periodN, gridN).
 #' @param GeoData list, geological data,  For VIC Model should contain at least the following 4 data:
 #'     \itemize{
-#'     \item The field names in these lists must be consistent and will be the only index.
+#'     (The field names must be the same as listed in the following list because they will be the only index.)
 #'     \item Evalution: 1-array(gridN). Evalution of all grids.
 #'     \item Location: data.frame:	gridN obs. of  3 variables. ID,
 #'     \item SoilParam: data.frame':	gridN obs. of  some variables.
@@ -28,13 +28,13 @@
 #'     }
 #'     Location field names, for VIC Model should contain at least the following 2 data:
 #'     \itemize{
-#'     \item The field names in these lists must be consistent and will be the only index.
+#'     (The field names must be the same as listed in the following list because they will be the only index.)
 #'     \item Latitude
 #'     \item Longitude
 #'     }
 #'     SoilParam field names, for VIC Model should contain at least the following 12 data
 #'     \itemize{
-#'     \item The field names in these lists must be consistent and will be the only index.
+#'     (The field names must be the same as listed in the following list because they will be the only index.)
 #'     \item T_Porosity_: top soil...
 #'     \item T_FieldCapacity_
 #'     \item T_WiltingPoint_
@@ -50,7 +50,7 @@
 #'     }
 #'     LanduseParam field names, for VIC Model should contain at least the following 28 data
 #'     \itemize{
-#'     \item The field names in these lists must be consistent and will be the only index.
+#'     (The field names must be the same as listed in the following list because they will be the only index.)
 #'     \item SL_mm
 #'     \item root_depth_mm
 #'     \item rarc
@@ -61,15 +61,15 @@
 #'
 #' @param GridData 4-list of grid-data used to calculate confluence(route)
 #'     \itemize{
-#'     \item The field names in these lists must be consistent and will be the only index.
+#'     (The field names must be the same as listed in the following list because they will be the only index.)
 #'     \item TypeGridID: 4-list. Type of each grid point.
-#'     \item GridID: matrix:	ID in grid-data, be sure to mark: attr(GridID, "Null"), what the Null-Wert in grid-data.
-#'     \item FlowDirection: matrix':	FlowDirection in grid-data, be sure to mark: attr(GridID, "Null"), what the Null-Wert in grid-data.
-#'     \item GridDEM: matrix':	DEM in grid-data, be sure to mark: attr(GridID, "Null"), what the Null-Wert in grid-data.
+#'     \item GridID: matrix:	ID in grid-data
+#'     \item FlowDirection: matrix':	FlowDirection in grid-data
+#'     \item GridDEM: matrix':	DEM in grid-data
 #'     }
 #'     TypeGridID: 4-list
 #'     \itemize{
-#'     \item The field names in these lists must be consistent and will be the only index.
+#'     (The field names must be the same as listed in the following list because they will be the only index.)
 #'     \item GridGridID    : all grid ID in 1-array(gridN)
 #'     \item RiverGridID   : river grid ID in 1-array, Estuary and HydroStation belong to river
 #'     \item EstuaryID     : Estuary ID in 1-array, HydroStation belong to Estuary
@@ -123,14 +123,11 @@ InListMake_VIC <- function(infoStarDay, ##*##
   testUM <- length(UPMethondList)
   if(testUM != 4) stop("In Vic at least 4 methonds to implement the UH, which can be the same 4 methonds", "\n  ***now is: ", testUM)
 
-  testNL <- names(attributes(GridData$FlowDirection))
-  if(!("Null" %in% testNL)) stop("Please add the \"Null\" attribute to the FlowDirection data, whose value is the representation value of the empty value of the FlowDirection data.")
-
 
 
 
   RETInList <- list(JDay = matrix(rep(NDay, GridN), PeriodN, GridN),
-                    Elevation = matrix(rep(GeoData$Evalution, PeriodN), PeriodN, GridN, byrow = F) / 1000.0,
+                    Elevation = matrix(rep(GeoData$Evalution, PeriodN), PeriodN, GridN, byrow = F),
                     Latitude = matrix(rep(GeoData$Location$Latitude , PeriodN), PeriodN, GridN, byrow = F),
                     Tmean = MetData$Tmean,
                     Tmax = MetData$Tmax,
