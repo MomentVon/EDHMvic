@@ -101,7 +101,7 @@ InListMake_VIC <- function(infoStarDay, ##*##
                            UPMethondList,
                            UHPeriodN = 180,
                            UHUnitTranslate){
-  GridN = length(GridData$TypeGridID$GridGridID)
+  GridN = dim(GridData$TypeGridID$GridGridID)[1]
   DateDay = seq(as.Date(infoStarDay),as.Date(infoEndDay),1)
   PeriodN = length(DateDay)
   NDay = toNDayofYear(DateDay)
