@@ -101,28 +101,35 @@ InListMake_VIC <- function(infoStarDay, ##*##
                            UPMethondList,
                            UHPeriodN = 180,
                            UHUnitTranslate){
+  if(any(map(GridData$TypeGridID, class) != "data.frame")){
+    notDFI = which(map(GridData$TypeGridID, class) != "data.frame")
+    for (i in notDFI) {
+      GridData$TypeGridID[[i]] <- as.data.frame(GridData$TypeGridID[[i]])
+    }
+    warning("NOTE: ", names(GridData$TypeGridID)[notDFI], " in GridData ist(are) not data.frame.", "\nIt(They) has set as data.fram, but it will may be wrong later.")
+  }
+
   GridN = dim(GridData$TypeGridID$GridGridID)[1]
   DateDay = seq(as.Date(infoStarDay),as.Date(infoEndDay),1)
   PeriodN = length(DateDay)
   NDay = toNDayofYear(DateDay)
   MON = toMON(DateDay)
-  message("The number of grid points(caculate from GridGridID) is: ", GridN, "\nThe number of periods is: ", PeriodN)
+  message("The number of grid points(caculate from GridGridID) is: ", GridN, ". ", "\nThe number of periods is: ", PeriodN, ". ")
   testML <- as.data.frame(map(MetData, dim))
   if(any(testML[1,] != PeriodN)) stop("Make sure that the data of each field in the metrol data is a two-dimensional array or matrix of periodN * gridN.", "\n  ***now: ",
-                                                            "\n", "PeriodN of ", names(MetData)[which(testML[1,] != PeriodN)]," is: ", testML[1,which(testML[1,] != PeriodN)])
+                                      "\n", "PeriodN of ", names(MetData)[which(testML[1,] != PeriodN)]," is: ", testML[1,which(testML[1,] != PeriodN)], ". ")
   if(any(testML[2,] != GridN)) stop("Make sure that the data of each field in the metrol data is a two-dimensional array or matrix of periodN * gridN.", "\n  ***now: ",
-                                                            "\n", "GridN of ", names(MetData)[which(testML[2,] != GridN)]," is: ", testML[2,which(testML[2,] != GridN)])
+                                    "\n", "GridN of ", names(MetData)[which(testML[2,] != GridN)]," is: ", testML[2,which(testML[2,] != GridN)], ". ")
   testEL <- length(GeoData$Evalution)
-  if(testEL != GridN) stop("Make sure that the data of each field in Evalution(in GeoData) is a one-dimensional array of gridN.", "\n  ***now is: ", testEL)
+  if(testEL != GridN) stop("Make sure that the data of each field in Evalution(in GeoData) is a one-dimensional array of gridN.", "\n  ***now is: ", testEL, ". ")
   testLC <- dim(GeoData$Location)[1]
-  if(testLC != GridN) stop("Make sure that the data of each field in Location(in GeoData) is a data.frame:	gridN obs. (of  3 variables).", "\n  ***now is: ", testLC)
+  if(testLC != GridN) stop("Make sure that the data of each field in Location(in GeoData) is a data.frame:	gridN obs. (of  3 variables).", "\n  ***now is: ", testLC, ". ")
   testSP <- dim(GeoData$SoilParam)[1]
-  if(testSP != GridN) stop("Make sure that the data of each field in SoilParam(in GeoData) is a data.frame:	gridN obs. (of  n variables).", "\n  ***now is: ", testSP)
+  if(testSP != GridN) stop("Make sure that the data of each field in SoilParam(in GeoData) is a data.frame:	gridN obs. (of  n variables).", "\n  ***now is: ", testSP, ". ")
   testLP <- dim(GeoData$LanduseParam)[1]
-  if(testLP != GridN) stop("Make sure that the data of each field in LanduseParam(in GeoData) is a data.frame:	gridN obs. (of  n variables).", "\n  ***now is: ", testLP)
+  if(testLP != GridN) stop("Make sure that the data of each field in LanduseParam(in GeoData) is a data.frame:	gridN obs. (of  n variables).", "\n  ***now is: ", testLP, ". ")
   testUM <- length(UPMethondList)
-  if(testUM != 4) stop("In Vic at least 4 methonds to implement the UH, which can be the same 4 methonds", "\n  ***now is: ", testUM)
-
+  if(testUM != 4) stop("In Vic at least 4 methonds to implement the UH, which can be the same 4 methonds", "\n  ***now is: ", testUM, ". ")
 
 
 
@@ -180,8 +187,6 @@ InListMake_VIC <- function(infoStarDay, ##*##
               UPMethondList = UPMethondList,
               UHPeriodN = UHPeriodN,
               UHUnitTranslate = UHUnitTranslate))
-
-
 }
 
 #' @title Make the required PaList for VIC
