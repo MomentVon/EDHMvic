@@ -1,10 +1,18 @@
+#' @title  Make the required INList for model
+#' @description Make the required list according to the format of the model model input list.
+#' @param ClsName chr, chr vector, all the methonds of hydrology modul. e.g.ClsNa <- c("VIC", "PenmanMonteith", "GreenAmpt", "Gash", "ARNO", "G2RES")
+#' @param ... other paramters
+#' @return InList for model
+#' @export
+InListMake <- function(ClsName, ...) UseMethod("InListMake", ClsName)
+
 #' @title  Make the required INList for VIC
 #' @description Make the required list according to the format of the model VIC input list.
 #' @import HMtools EDHM
 #' @importFrom purrr map
+#' @param ClsName chr, chr vector, all the methonds of hydrology modul. e.g.ClsNa <- c("VIC", "PenmanMonteith", "GreenAmpt", "Gash", "ARNO", "G2RES")
 #' @param infoStarDay chr, the start day, e.g. "1989-1-1"
 #' @param infoEndDay chr, the end day, e.g. "1993-12-31"
-#' @param ClsName chr, chr vector, all the methonds of hydrology modul. e.g.ClsNa <- c("VIC", "PenmanMonteith", "GreenAmpt", "Gash", "ARNO", "G2RES")
 #' @param MetData list, num, list of metrol data. For VIC Model should contain at least the following 8 data:
 #'     \itemize{
 #'     (The field names must be the same as listed in the following list because they will be the only index.)
@@ -22,9 +30,9 @@
 #'     \itemize{
 #'     (The field names must be the same as listed in the following list because they will be the only index.)
 #'     \item Evalution: 1-array(gridN). Evalution of all grids.
-#'     \item Location: data.frame:	gridN obs. of  3 variables. ID,
-#'     \item SoilParam: data.frame':	gridN obs. of  some variables.
-#'     \item LanduseParam: data.frame':	gridN obs. of  some variables.
+#'     \item Location: data.frame:  gridN obs. of  3 variables. ID,
+#'     \item SoilParam: data.frame':  gridN obs. of  some variables.
+#'     \item LanduseParam: data.frame': gridN obs. of  some variables.
 #'     }
 #'     Location field names, for VIC Model should contain at least the following 2 data:
 #'     \itemize{
@@ -63,9 +71,9 @@
 #'     \itemize{
 #'     (The field names must be the same as listed in the following list because they will be the only index.)
 #'     \item TypeGridID: 4-list. Type of each grid point.
-#'     \item GridID: matrix:	ID in grid-data
-#'     \item FlowDirection: matrix':	FlowDirection in grid-data
-#'     \item GridDEM: matrix':	DEM in grid-data
+#'     \item GridID: matrix:  ID in grid-data
+#'     \item FlowDirection: matrix':  FlowDirection in grid-data
+#'     \item GridDEM: matrix':  DEM in grid-data
 #'     }
 #'     TypeGridID: 4-list
 #'     \itemize{
@@ -78,13 +86,15 @@
 #' @param UPMethondList four methonds Name for IUH, e.g. c("Shipeng", "Shipeng", "Shipeng", "Shipeng")
 #' @param UHPeriodN howmany Period have in Discrete unit hydrograph
 #' @param UHUnitTranslate Transformation parameters from mm to m^3/s
+#' @param ... other paramters
 #' @return InList for VIC
 #' @examples
-#' ClsNa <- c("VIC", "PenmanMonteith", "GreenAmpt", "Gash", "ARNO", "G2RES")
+#' ClsNa <- c("PenmanMonteith", "GreenAmpt", "Gash", "ARNO", "G2RES", "VIC")
+#' class(ClsNa) <- tail(ClsNa, 1)
 #' UPMethondList = list("Shipeng", "Shipeng", "Shipeng", "Shipeng")
-#' VICInList <- InListMake_VIC("1989-1-1",
+#' VICInList <- InListMake(ClsNa,
+#'                             "1989-1-1",
 #'                             "1993-12-31",
-#'                             ClsNa,
 #'                             MetroList,
 #'                             GeoList,
 #'                             GridList,
@@ -92,15 +102,16 @@
 #'                             180,
 #'                             35)
 #' @export
-InListMake_VIC <- function(infoStarDay, ##*##
+InListMake.VIC <- function(ClsName,
+                           infoStarDay, ##*##
                            infoEndDay, ##*##
-                           ClsName,
                            MetData,
                            GeoData,
                            GridData,
                            UPMethondList,
                            UHPeriodN = 180,
-                           UHUnitTranslate){
+                           UHUnitTranslate,
+                           ...){
   if(any(map(GridData$TypeGridID, class) != "data.frame")){
     notDFI = which(map(GridData$TypeGridID, class) != "data.frame")
     for (i in notDFI) {
@@ -123,11 +134,11 @@ InListMake_VIC <- function(infoStarDay, ##*##
   testEL <- length(GeoData$Evalution)
   if(testEL != GridN) stop("Make sure that the data of each field in Evalution(in GeoData) is a one-dimensional array of gridN.", "\n  ***now is: ", testEL, ". ")
   testLC <- dim(GeoData$Location)[1]
-  if(testLC != GridN) stop("Make sure that the data of each field in Location(in GeoData) is a data.frame:	gridN obs. (of  3 variables).", "\n  ***now is: ", testLC, ". ")
+  if(testLC != GridN) stop("Make sure that the data of each field in Location(in GeoData) is a data.frame:  gridN obs. (of  3 variables).", "\n  ***now is: ", testLC, ". ")
   testSP <- dim(GeoData$SoilParam)[1]
-  if(testSP != GridN) stop("Make sure that the data of each field in SoilParam(in GeoData) is a data.frame:	gridN obs. (of  n variables).", "\n  ***now is: ", testSP, ". ")
+  if(testSP != GridN) stop("Make sure that the data of each field in SoilParam(in GeoData) is a data.frame: gridN obs. (of  n variables).", "\n  ***now is: ", testSP, ". ")
   testLP <- dim(GeoData$LanduseParam)[1]
-  if(testLP != GridN) stop("Make sure that the data of each field in LanduseParam(in GeoData) is a data.frame:	gridN obs. (of  n variables).", "\n  ***now is: ", testLP, ". ")
+  if(testLP != GridN) stop("Make sure that the data of each field in LanduseParam(in GeoData) is a data.frame:  gridN obs. (of  n variables).", "\n  ***now is: ", testLP, ". ")
   testUM <- length(UPMethondList)
   if(testUM != 4) stop("In Vic at least 4 methonds to implement the UH, which can be the same 4 methonds", "\n  ***now is: ", testUM, ". ")
 
@@ -164,30 +175,38 @@ InListMake_VIC <- function(infoStarDay, ##*##
                             GridData$FlowDirection,
                             GridData$GridDEM)
   TransAll <- fctGTransMatAll(G2AimGAll, GridData$TypeGridID)
-
-  return(list(GridN = GridN,
-              PeriodN = PeriodN,
-              ClsName = ClsName,
-              RET = RET,
-              PrecipitationHoch = MetData$PrecipitationHoch,
-              T_Porosity_ = GeoData$SoilParam$T_Porosity_,
-              AerodynamicResistance = AerodynamicResistance,
-              ArchitecturalResistance = GeoData$LanduseParam$rarc,
-              StomatalResistance = GeoData$LanduseParam$rmin,
-              S_Porosity_ = GeoData$SoilParam$S_Porosity_,
-              T_SaturatedHydraulicConductivity_mm_day = GeoData$SoilParam$T_SaturatedHydraulicConductivity_mm_day,
-              T_WettingFrontSoilSuctionHead_mm = GeoData$SoilParam$T_WettingFrontSoilSuctionHead_mm,
-              FieldCapacity = GeoData$SoilParam$T_FieldCapacity_,
-              WiltingPoint = GeoData$SoilParam$T_WiltingPoint_,
-              SaturatedSoilSuctionHead = GeoData$SoilParam$T_SaturatedSoilSuctionHead_mm,
-              SaturatedHydraulicConductivity = GeoData$SoilParam$T_SaturatedHydraulicConductivity_mm_day,
-              TypeGridID = GridData$TypeGridID,
-              G2AimGAll = G2AimGAll,
-              TransAll = TransAll,
-              UPMethondList = UPMethondList,
-              UHPeriodN = UHPeriodN,
-              UHUnitTranslate = UHUnitTranslate))
+  RT <- list(GridN = GridN,
+             PeriodN = PeriodN,
+             ClsName = ClsName,
+             RET = RET,
+             PrecipitationHoch = MetData$PrecipitationHoch,
+             T_Porosity_ = GeoData$SoilParam$T_Porosity_,
+             AerodynamicResistance = AerodynamicResistance,
+             ArchitecturalResistance = GeoData$LanduseParam$rarc,
+             StomatalResistance = GeoData$LanduseParam$rmin,
+             S_Porosity_ = GeoData$SoilParam$S_Porosity_,
+             T_SaturatedHydraulicConductivity_mm_day = GeoData$SoilParam$T_SaturatedHydraulicConductivity_mm_day,
+             T_WettingFrontSoilSuctionHead_mm = GeoData$SoilParam$T_WettingFrontSoilSuctionHead_mm,
+             FieldCapacity = GeoData$SoilParam$T_FieldCapacity_,
+             WiltingPoint = GeoData$SoilParam$T_WiltingPoint_,
+             SaturatedSoilSuctionHead = GeoData$SoilParam$T_SaturatedSoilSuctionHead_mm,
+             SaturatedHydraulicConductivity = GeoData$SoilParam$T_SaturatedHydraulicConductivity_mm_day,
+             TypeGridID = GridData$TypeGridID,
+             G2AimGAll = G2AimGAll,
+             TransAll = TransAll,
+             UPMethondList = UPMethondList,
+             UHPeriodN = UHPeriodN,
+             UHUnitTranslate = UHUnitTranslate)
+  class(RT) <- ClsName
+  return(RT)
 }
+
+#' @title Make the required PaList for hydro Model
+#' @description  Make the required list according to the format of the model paramters list.
+#' @param ParamterModell vector of all to be calibrated paramters for hydro Model.
+#' @return PaList for hydro Model
+#' @export
+PaListMake <- function(ParamterModell) UseMethod("PaListMake", ParamterModell)
 
 #' @title Make the required PaList for VIC
 #' @description  Make the required list according to the format of the model VIC paramters list.
@@ -208,25 +227,36 @@ InListMake_VIC <- function(infoStarDay, ##*##
 #' ParamterMax = c(15, 300, 600, 900, 0.9, 2.7, 0.7, 30, 9, 1,1,15,7,7,7,10,10,10,15)
 #' ParamterMin = c(5, 50, 100, 150, 0.1, 1.3, 0.1,9, 0.1, 0.1, 0.1, 3,0.5, 0.5, 0.5 , 0.5,0.5,0.5,0.5)
 #' ParamterModell = 0.5 * (ParamterMax + ParamterMin)
-#' VICPaList <- PaListMake_VIC(ParamterModell)
+#' class(ParamterModell) <- "VIC"
+#' VICPaList <- PaListMake(ParamterModell)
 #' @return PaList for VIC
 #' @export
-PaListMake_VIC <- function(ParamterModell){
-  return(list(ZoneDepth = ParamterModell[1:4],
-              ### 1.1 interception #########
-              paCoefficientFreeThroughfall = ParamterModell[5],
-              ### 1.2 base flow ########
-              paExponentARNOBase = ParamterModell[6],
-              paSoilMoistureVolumeARNOBaseThresholdRadio = ParamterModell[7],
-              paDrainageLossMax = ParamterModell[8],##*## #mm
-              paDrainageLossMin = ParamterModell[9], ##*## #mm
-              ### 1.3 Runoff ###########
-              paSoilMoistureCapacityB = ParamterModell[10], ##*## ##b is the soil moisture capacity shape paeter, which is a measure of the spatial variability of the soil moisture capacity
-              paInfiltrationRateB = ParamterModell[11],  ##*## ##b is the soil infiltrtionrate shape paeter,
-              ### 1.4 ground water #######
-              paClappHornbergerB = ParamterModell[12],
-              UPPaList = ParamterModell[13:19]))
+PaListMake.VIC <- function(ParamterModell){
+  message("Creating parameter list for model ", class(ParamterModell), ".")
+  RT <- list(ZoneDepth = ParamterModell[1:4],
+             ### 1.1 interception #########
+             paCoefficientFreeThroughfall = ParamterModell[5],
+             ### 1.2 base flow ########
+             paExponentARNOBase = ParamterModell[6],
+             paSoilMoistureVolumeARNOBaseThresholdRadio = ParamterModell[7],
+             paDrainageLossMax = ParamterModell[8],##*## #mm
+             paDrainageLossMin = ParamterModell[9], ##*## #mm
+             ### 1.3 Runoff ###########
+             paSoilMoistureCapacityB = ParamterModell[10], ##*## ##b is the soil moisture capacity shape paeter, which is a measure of the spatial variability of the soil moisture capacity
+             paInfiltrationRateB = ParamterModell[11],  ##*## ##b is the soil infiltrtionrate shape paeter,
+             ### 1.4 ground water #######
+             paClappHornbergerB = ParamterModell[12],
+             UPPaList = ParamterModell[13:19])
+  class(RT) <- class(ParamterModell)
+  return(RT)
 }
+
+#' modell
+#' @param VorIn input list for model
+#' @param VorPa pramater list for model
+#' @return Q(flow) of hydrostation, m^3/s
+#' @export
+MODELL <- function(VorIn, VorPa) UseMethod("MODELL", VorIn)
 #' modell VIC
 #' @import EDHM
 #' @importFrom VectorTools maxSVector
@@ -234,11 +264,12 @@ PaListMake_VIC <- function(ParamterModell){
 #' @param VorPa please checke output of EDHMvic::PaListMake_VIC()
 #' @return Q(flow) of hydrostation, m^3/s
 #' @examples
-#' ClsNa <- c("VIC", "PenmanMonteith", "GreenAmpt", "Gash", "ARNO", "G2RES")
+#' ClsNa <- c("PenmanMonteith", "GreenAmpt", "Gash", "ARNO", "G2RES", "VIC")
+#' class(ClsNa) <- tail(ClsNa, 1)
 #' UPMethondList = list("Shipeng", "Shipeng", "Shipeng", "Shipeng")
-#' VICInList <- InListMake_VIC("1989-1-1",
+#' VICInList <- InListMake(ClsNa,
+#'                             "1989-1-1",
 #'                             "1993-12-31",
-#'                             ClsNa,
 #'                             MetroList,
 #'                             GeoList,
 #'                             GridList,
@@ -248,10 +279,11 @@ PaListMake_VIC <- function(ParamterModell){
 #' ParamterMax = c(15, 300, 600, 900, 0.9, 2.7, 0.7, 30, 9, 1,1,15,7,7,7,10,10,10,15)
 #' ParamterMin = c(5, 50, 100, 150, 0.1, 1.3, 0.1,9, 0.1, 0.1, 0.1, 3,0.5, 0.5, 0.5 , 0.5,0.5,0.5,0.5)
 #' ParamterModell = 0.5 * (ParamterMax + ParamterMin)
-#' VICPaList <- PaListMake_VIC(ParamterModell)
-#' Q <- MODELL_VIC(VICInList, VICPaList)
+#' class(ParamterModell) <- ClsNa
+#' VICPaList <- PaListMake(ParamterModell)
+#' Q <- MODELL(VICInList, VICPaList)
 #' @export
-MODELL_VIC <- function(VorIn, VorPa){
+MODELL.VIC <- function(VorIn, VorPa){
   ClsName = VorIn$ClsName
   GridN = VorIn$GridN
   PeriodN = VorIn$PeriodN
